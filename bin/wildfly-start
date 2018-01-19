@@ -30,7 +30,10 @@ fi
 
 do-deploy "${wildfly}"/standalone/deployments
 
-export "${JAVA_OPTS}"
+if [ -n "${JAVA_OPTS}" ]
+then
+    export ${JAVA_OPTS}
+fi
 
 "${wildfly}"/bin/standalone.sh -b 127.0.0.1 0<&- 2>/dev/null 1>/dev/null &
 
