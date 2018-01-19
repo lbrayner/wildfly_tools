@@ -1,0 +1,7 @@
+#!/bin/sh
+
+##########################
+# Leonardo Brayner e Silva
+##########################
+
+pkill -9 -f 'java.*server.*jboss'

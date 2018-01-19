@@ -1,0 +1,25 @@
+#!/bin/sh
+
+##########################
+# Leonardo Brayner e Silva
+##########################
+
+print_usage() {
+	printf '\n%s\n' "$(basename "${0}") ROOT MANIFEST_PATH"
+}
+
+if [ ! ${#} -eq 2 ]
+then
+	print_usage
+	exit 0
+fi
+
+jar_file="${1}"
+manifest_file="${2}"
+
+if [ -f ${jar_file} ]
+then
+    unzip -p -q ${jar_file} ${manifest_file}
+else
+    cat ${manifest_file}
+fi

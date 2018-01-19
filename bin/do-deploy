@@ -1,0 +1,32 @@
+#!/bin/sh
+
+program_name="$(basename "${0}")"
+
+print_usage() {
+	printf '\n%s\n' "${program_name} <dir>"
+}
+
+if [ -z "$1" ]
+then
+	print_usage
+	exit 0
+fi
+
+dir="${1}"
+
+if [ ! -d "${dir}" ]
+then
+	printf '%s not a directory.\n' "${dir}"
+	exit 0
+fi
+
+
+deployments="${dir}"
+
+rm ${deployments}/*.dodeploy* 2>/dev/null 1>/dev/null
+rm ${deployments}/*.undeploy* 2>/dev/null 1>/dev/null
+rm ${deployments}/*.deployed* 2>/dev/null 1>/dev/null
+rm ${deployments}/*.isdeploy* 2>/dev/null 1>/dev/null
+rm ${deployments}/*.failed*   2>/dev/null 1>/dev/null
+
+find ${deployments}/ -mindepth 1 -maxdepth 1 -exec basename "{}" \; | xargs  -L1 -i touch ${deployments}/"{}".dodeploy

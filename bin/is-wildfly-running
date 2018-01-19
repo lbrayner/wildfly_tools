@@ -1,0 +1,7 @@
+#!/bin/sh
+
+##########################
+# Leonardo Brayner e Silva
+##########################
+
+pgrep -f 'java.*standalone' 2>/dev/null 1>/dev/null
