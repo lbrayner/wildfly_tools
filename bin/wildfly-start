@@ -1,0 +1,49 @@
+#!/bin/sh
+
+##########################
+# Leonardo Brayner e Silva
+##########################
+
+# set -x
+
+print_usage() {
+	printf '\n%s\n' "$(basename "${0}") WILDFLY_HOME"
+}
+
+if [ ! ${#} -eq 1 ]
+then
+	print_usage
+	exit 0
+fi
+
+wildfly="${1}"
+
+wildfly-kill
+
+if ! is-wildfly-running
+then
+	printf '\n\n%s\n\n' "Stopped Wildfly."
+else
+	printf '\n\n%s\n\n' "Failed to stop Wildfly!" 1>&2
+	exit 1
+fi
+
+do-deploy "${wildfly}"/standalone/deployments
+
+export "${JAVA_OPTS}"
+
+"${wildfly}"/bin/standalone.sh -b 127.0.0.1 0<&- 2>/dev/null 1>/dev/null &
+
+printf '\n\n%s\n\n' "Sleeping 1s..."
+
+sleep 1
+
+if is-wildfly-running
+then
+	printf '\n\n%s\n\n' "Success! Wildfly started."
+	exit 0
+
+else
+	printf '\n\n%s\n\n' "Failed to start Wildfly!" 1>&2
+	exit 1
+fi
