@@ -3,7 +3,7 @@
 program_name="$(basename "${0}")"
 
 print_usage() {
-	printf '\n%s\n' "${program_name} <dir>"
+	printf '\n%s\n' "$(basename "${0}") WILDFLY_HOME"
 }
 
 if [ -z "${WILDFLY_HOME}" ]

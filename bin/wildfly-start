@@ -33,7 +33,7 @@ else
 	exit 1
 fi
 
-do-deploy "${wildfly}"/standalone/deployments
+do-deploy "${wildfly}"
 
 if [ -n "${JAVA_OPTS}" ]
 then
