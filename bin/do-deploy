@@ -6,22 +6,27 @@ print_usage() {
 	printf '\n%s\n' "${program_name} <dir>"
 }
 
-if [ -z "$1" ]
+if [ -z "${WILDFLY_HOME}" ]
 then
-	print_usage
-	exit 0
+    if [ ! ${#} -eq 1 ]
+    then
+        print_usage
+        exit 0
+    else
+        wildfly="${1}"
+    fi
+else
+    wildfly="${WILDFLY_HOME}"
 fi
 
-dir="${1}"
-
-if [ ! -d "${dir}" ]
+if [ ! -d "${wildfly}" ]
 then
 	printf '%s not a directory.\n' "${dir}"
 	exit 0
 fi
 
 
-deployments="${dir}"
+deployments="${wildfly}"/standalone/deployments
 
 rm ${deployments}/*.dodeploy* 2>/dev/null 1>/dev/null
 rm ${deployments}/*.undeploy* 2>/dev/null 1>/dev/null
@@ -29,4 +34,5 @@ rm ${deployments}/*.deployed* 2>/dev/null 1>/dev/null
 rm ${deployments}/*.isdeploy* 2>/dev/null 1>/dev/null
 rm ${deployments}/*.failed*   2>/dev/null 1>/dev/null
 
-find ${deployments}/ -mindepth 1 -maxdepth 1 -exec basename "{}" \; | xargs  -L1 -i touch ${deployments}/"{}".dodeploy
+find ${deployments}/ -mindepth 1 -maxdepth 1 -exec basename "{}" \; \
+    | xargs  -L1 -i touch ${deployments}/"{}".dodeploy
