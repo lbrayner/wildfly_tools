@@ -10,13 +10,18 @@ print_usage() {
 	printf '\n%s\n' "$(basename "${0}") WILDFLY_HOME"
 }
 
-if [ ! ${#} -eq 1 ]
+if [ -z "${WILDFLY_HOME}" ]
 then
-	print_usage
-	exit 0
+    if [ ! ${#} -eq 1 ]
+    then
+        print_usage
+        exit 0
+    else
+        wildfly="${1}"
+    fi
+else
+    wildfly="${WILDFLY_HOME}"
 fi
-
-wildfly="${1}"
 
 rm -Rf "${wildfly}"/standalone/data/*
 rm -Rf "${wildfly}"/standalone/deployments/*
