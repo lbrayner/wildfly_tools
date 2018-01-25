@@ -35,12 +35,13 @@ fi
 
 do-deploy "${wildfly}"
 
-if [ -n "${JAVA_OPTS}" ]
-then
-    export JAVA_OPTS
-fi
+############################
+# Consider setting JAVA_OPTS and WILDFLY_OPTS.
+# e.g.: - WILDFLY_OPTS="-b 127.0.0.1"
+#       - JAVA_OPTS="-Xms1536m -Xmx1536m -Xss1m"
+############################
 
-"${wildfly}"/bin/standalone.sh -b 127.0.0.1 0<&- 2>/dev/null 1>/dev/null &
+"${wildfly}"/bin/standalone.sh ${WILDFLY_OPTS} 0<&- 2>/dev/null 1>/dev/null &
 
 printf '\n\n%s\n\n' "Sleeping 1s..."
 
