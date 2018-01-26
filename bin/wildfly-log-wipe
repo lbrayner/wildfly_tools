@@ -1,0 +1,26 @@
+#!/bin/sh
+
+##########################
+# Leonardo Brayner e Silva
+##########################
+
+# set -x
+
+print_usage() {
+	printf '\n%s\n' "$(basename "${0}") WILDFLY_HOME"
+}
+
+if [ -z "${WILDFLY_HOME}" ]
+then
+    if [ ! ${#} -eq 1 ]
+    then
+        print_usage
+        exit 0
+    else
+        wildfly="${1}"
+    fi
+else
+    wildfly="${WILDFLY_HOME}"
+fi
+
+rm -f  "${wildfly}"/standalone/log/server.log
