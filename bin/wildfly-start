@@ -51,8 +51,7 @@ if is-wildfly-running
 then
 	printf '\n\n%s\n\n' "Success! Wildfly started."
 	exit 0
-
-else
-	printf '\n\n%s\n\n' "Failed to start Wildfly!" 1>&2
-	exit 1
 fi
+
+printf '\n\n%s\n\n' "Failed to start Wildfly!" 1>&2
+exit 1
