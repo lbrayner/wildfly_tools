@@ -1,7 +1,13 @@
 #!/bin/sh
 
-##########################
-# Leonardo Brayner e Silva
-##########################
+print_usage() {
+	printf '\n%s\n' "usage: $(basename "${0}")"
+}
 
-pgrep -f 'java.*standalone' 2>/dev/null 1>/dev/null
+if [ ! ${#} -eq 0 ]
+then
+    print_usage 1>&2
+    exit 1
+fi
+
+pgrep -f 'java.*server.*jboss.*standalone' 2>/dev/null 1>/dev/null

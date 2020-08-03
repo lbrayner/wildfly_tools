@@ -1,26 +1,33 @@
 #!/bin/sh
 
-##########################
-# Leonardo Brayner e Silva
-##########################
-
 # set -x
 
 print_usage() {
-	printf '\n%s\n' "$(basename "${0}") WILDFLY_HOME"
+	printf '\n%s\n' "$(basename "${0}") [WILDFLY_HOME]"
 }
 
-if [ -z "${WILDFLY_HOME}" ]
+if [ ${#} -gt 1 ]
 then
-    if [ ! ${#} -eq 1 ]
-    then
-        print_usage
-        exit 0
-    else
-        wildfly="${1}"
-    fi
-else
+    print_usage 1>&2
+    exit 1
+fi
+
+wildfly=""
+
+if [ ${#} -eq 1 ]
+then
+    wildfly="${1}"
+fi
+
+if [ -z "${wildfly}" ]
+then
     wildfly="${WILDFLY_HOME}"
+fi
+
+if [ -z "${wildfly}" ]
+then
+    print_usage 1>&2
+    exit 1
 fi
 
 "${wildfly}"/bin/jboss-cli.sh --connect

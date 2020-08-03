@@ -1,9 +1,5 @@
 #!/bin/sh
 
-##########################
-# Leonardo Brayner e Silva
-##########################
-
 print_usage() {
 	printf '\n%s\n' "$(basename "${0}") ROOT MANIFEST_PATH"
 }

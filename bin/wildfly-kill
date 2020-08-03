@@ -1,7 +1,13 @@
 #!/bin/sh
 
-##########################
-# Leonardo Brayner e Silva
-##########################
+print_usage() {
+	printf '\n%s\n' "usage: $(basename "${0}")"
+}
 
-pkill -9 -f 'java.*server.*jboss'
+if [ ! ${#} -eq 0 ]
+then
+    print_usage 1>&2
+    exit 1
+fi
+
+pkill -9 -f 'java.*server.*jboss.*standalone'
