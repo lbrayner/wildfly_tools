@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 print_usage() {
 	printf '\n%s\n' "$(basename "${0}") PID"
@@ -15,21 +15,27 @@ fi
 pid=${1}
 
 threads="$(mktemp)"
-
-top -n 1 -H -p ${pid} | ansifilter \
-    | sed -n 's/^\(.* java\)[ \t]\+$/\1/p' > "${threads}"
-
 active_threads="$(mktemp)"
 
-awk '{if($9 > 0.0) print $0;}' "${threads}" > "${active_threads}"
-
-while read tid
+while true
 do
-    pattern="${pattern}|$(printf '0x%x' ${tid})"
-done < <(cut -d " " -f 1 "${active_threads}")
+    top -n 1 -H -p ${pid} | ansifilter \
+        | sed -n 's/^\(.* java\)[ \t]\+$/\1/p' > "${threads}"
 
-[[ -z "${pattern}" ]] && exit
+    awk '{if($9 > 0.0) print $0;}' "${threads}" > "${active_threads}"
 
-pattern="${pattern:1}"
+    pattern=""
 
-jstack -l ${pid} | grep -E "${pattern}"
+    while read tid
+    do
+        pattern="${pattern}|$(printf '0x%x' ${tid})"
+    done < <(cut -d " " -f 1 "${active_threads}")
+
+    [[ -z "${pattern}" ]] && sleep 1 && continue
+
+    pattern="${pattern:1}"
+
+    jstack -l ${pid} | sed -n -E "/${pattern}/p"
+
+    sleep 1
+done
