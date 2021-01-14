@@ -25,7 +25,7 @@ awk '{if($9 > 0.0) print $0;}' "${threads}" > "${active_threads}"
 
 while read tid
 do
-    pattern="${pattern}|${tid}"
+    pattern="${pattern}|$(printf '0x%x' ${tid})"
 done < <(cut -d " " -f 1 "${active_threads}")
 
-echo ${pattern}
+echo ${pattern:1}
