@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -ex
+
+print_usage() {
+	printf '\n%s\n' "$(basename "${0}") PID"
+}
+
+if [[ ! ${#} -eq 1 ]]
+then
+    print_usage 1>&2
+    exit 1
+fi
+
+pid=${1}
+
+threads="$(mktemp)"
+
+top -n 1 -H -p ${pid} | ansifilter \
+    | sed -n 's/^\(.* java\)[ \t]\+$/\1/p' > "${threads}"
+
+active_threads="$(mktemp)"
+
+awk '{if($9 > 0.0) print $0;}' "${threads}" > "${active_threads}"
+
+while read tid
+do
+    pattern="${pattern}|${tid}"
+done < <(cut -d " " -f 1 "${active_threads}")
+
+echo ${pattern}
