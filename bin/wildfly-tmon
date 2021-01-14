@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+set -o pipefail
 
 print_usage() {
 	printf '\n%s\n' "$(basename "${0}") PID"
@@ -12,6 +13,12 @@ then
     exit 1
 fi
 
+if ! hash ansifilter
+then
+    echo "ansifilter required." 1>&2
+    exit 1
+fi
+
 pid=${1}
 
 threads="$(mktemp)"
@@ -20,7 +27,7 @@ active_threads="$(mktemp)"
 while true
 do
     top -n 1 -H -p ${pid} | ansifilter \
-        | sed -n 's/^\(.* java\)[ \t]\+$/\1/p' > "${threads}"
+        | sed -n 's/^[ \t]*\(.* java\)[ \t]\+$/\1/p' > "${threads}"
 
     awk '{if($9 > 0.0) print $0;}' "${threads}" > "${active_threads}"
 
