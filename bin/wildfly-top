@@ -28,4 +28,8 @@ do
     pattern="${pattern}|$(printf '0x%x' ${tid})"
 done < <(cut -d " " -f 1 "${active_threads}")
 
-echo ${pattern:1}
+[[ -z "${pattern}" ]] && exit
+
+pattern="${pattern:1}"
+
+jstack -l ${pid} | grep -E "${pattern}"
