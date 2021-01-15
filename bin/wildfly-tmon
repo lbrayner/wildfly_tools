@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-set -e
 set -o pipefail
 
 print_usage() {
 	printf '\n%s\n' "$(basename "${0}") PID"
 }
 
-if [[ ! ${#} -eq 1 ]]
+if [[ ${#} -gt 1 ]]
 then
     print_usage 1>&2
     exit 1
@@ -21,12 +20,24 @@ fi
 
 pid=${1}
 
+if [[ -n "${pid}" ]]
+then
+    set -e
+fi
+
 threads="$(mktemp)"
 active_threads="$(mktemp)"
 
 while true
 do
-    top -n 1 -H -p ${pid} | ansifilter \
+    if [[ -z ${pid} ]]
+    then
+        getpid=$(pgrep -f 'java.*server.*jboss.*standalone' | head -n1)
+    else
+        getpid=${pid}
+    fi
+
+    top -n 1 -H -p ${getpid} | ansifilter \
         | sed -n 's/^[ \t]*\(.* java\)[ \t]\+$/\1/p' > "${threads}"
 
     awk '{if($9 > 0.0) print $0;}' "${threads}" > "${active_threads}"
@@ -43,7 +54,7 @@ do
     pattern="${pattern:1}"
     date="$(date '+[%Y-%m-%d %H:%M:%S]')"
 
-    jstack -l ${pid} | sed -n -E "s/.*${pattern}.*/${date} &/p"
+    jstack -l ${getpid} | sed -n -E "s/.*(${pattern}).*/${date} &/p"
 
     sleep 1
 done
