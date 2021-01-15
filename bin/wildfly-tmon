@@ -3,7 +3,7 @@
 set -o pipefail
 
 print_usage() {
-	printf '\n%s\n' "$(basename "${0}") PID"
+	printf '\n%s\n' "$(basename "${0}") [PID]"
 }
 
 if [[ ${#} -gt 1 ]]
@@ -20,10 +20,7 @@ fi
 
 pid=${1}
 
-if [[ -n "${pid}" ]]
-then
-    set -e
-fi
+[[ -n "${pid}" ]] && set -e
 
 threads="$(mktemp)"
 active_threads="$(mktemp)"
@@ -32,12 +29,19 @@ while true
 do
     if [[ -z ${pid} ]]
     then
-        getpid=$(pgrep -f 'java.*server.*jboss.*standalone' | head -n1)
+        wpid=$(pgrep -f 'java.*server.*jboss.*standalone' | head -n1)
     else
-        getpid=${pid}
+        wpid=${pid}
     fi
 
-    top -n 1 -H -p ${getpid} | ansifilter \
+    if [[ -z ${wpid} ]]
+    then
+        echo "Could not find a WildFly instance." 1>&2
+        sleep 1
+        continue
+    fi
+
+    top -n 1 -H -p ${wpid} | ansifilter \
         | sed -n 's/^[ \t]*\(.* java\)[ \t]\+$/\1/p' > "${threads}"
 
     awk '{if($9 > 0.0) print $0;}' "${threads}" > "${active_threads}"
@@ -54,7 +58,7 @@ do
     pattern="${pattern:1}"
     date="$(date '+[%Y-%m-%d %H:%M:%S]')"
 
-    jstack -l ${getpid} | sed -n -E "s/.*(${pattern}).*/${date} &/p"
+    jstack -l ${wpid} | sed -n -E "s/.*(${pattern}).*/${date} &/p"
 
     sleep 1
 done
