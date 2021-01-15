@@ -41,8 +41,9 @@ do
     [[ -z "${pattern}" ]] && sleep 1 && continue
 
     pattern="${pattern:1}"
+    date="$(date '+[%Y-%m-%d %H:%M:%S]')"
 
-    jstack -l ${pid} | sed -n -E "/${pattern}/p"
+    jstack -l ${pid} | sed -n -E "s/.*${pattern}.*/${date} &/p"
 
     sleep 1
 done
