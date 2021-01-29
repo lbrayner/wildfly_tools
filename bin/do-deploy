@@ -30,11 +30,11 @@ fi
 
 deployments="${wildfly}"/standalone/deployments
 
-rm ${deployments}/*.dodeploy* 2>/dev/null 1>/dev/null
-rm ${deployments}/*.undeploy* 2>/dev/null 1>/dev/null
-rm ${deployments}/*.deployed* 2>/dev/null 1>/dev/null
-rm ${deployments}/*.isdeploy* 2>/dev/null 1>/dev/null
-rm ${deployments}/*.failed*   2>/dev/null 1>/dev/null
+rm ${deployments}/*.dodeploy* >/dev/null 2>&1
+rm ${deployments}/*.undeploy* >/dev/null 2>&1
+rm ${deployments}/*.deployed* >/dev/null 2>&1
+rm ${deployments}/*.isdeploy* >/dev/null 2>&1
+rm ${deployments}/*.failed*   >/dev/null 2>&1
 
-find ${deployments}/ -mindepth 1 -maxdepth 1 -exec basename "{}" \; \
-    | xargs  -L1 -i touch ${deployments}/"{}".dodeploy
+find "${deployments}"/ -mindepth 1 -maxdepth 1 -exec basename "{}" \; \
+    | xargs  -I{} touch "${deployments}/{}.dodeploy"
